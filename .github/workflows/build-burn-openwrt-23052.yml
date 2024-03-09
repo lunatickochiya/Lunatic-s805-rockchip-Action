@@ -93,13 +93,13 @@ jobs:
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/bin /mnt/openwrt/staging_dir /mnt/openwrt/build_dir/hostpkg /mnt/openwrt/build_dir/host
-        mkdir -p -m 777 openwrt/build_dir
+        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/bin /mnt/openwrt/staging_dir /mnt/openwrt/build_dir
         ln -sf /mnt/openwrt/dl openwrt/dl
         ln -sf /mnt/openwrt/bin openwrt/bin
         ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
-        ln -sf /mnt/openwrt/build_dir/hostpkg openwrt/build_dir/hostpkg
-        ln -sf /mnt/openwrt/build_dir/host openwrt/build_dir/host
+        ln -sf /mnt/openwrt/build_dir openwrt/build_dir
+        df -hT
+        ls /mnt/openwrt
 
     - name: 自定义安装包(优先于feeds)
       if: steps.clone.outputs.status == 'success'
@@ -242,6 +242,15 @@ jobs:
         rm -rf sha256sums
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 上传firmware目录
+      uses: actions/upload-artifact@main
+      continue-on-error: true
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: ${{ env.VERSION }}_${{matrix.target}}_ipks
+        path: |
+          firmware
 
     - name: 上传固件cowtransfer
       id: cowtransfer
