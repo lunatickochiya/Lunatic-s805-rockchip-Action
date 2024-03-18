@@ -69,10 +69,12 @@ jobs:
         echo "DIY_SH_AFB=${DIY_SH_AFB}" >> $GITHUB_ENV
         echo "DIY_SH_RFC=${DIY_SH_RFC}" >> $GITHUB_ENV
         echo "UPLOAD_BIN_DIR=${UPLOAD_BIN_DIR}" >> $GITHUB_ENV
+        echo "UPLOAD_IPK_DIR=${UPLOAD_IPK_DIR}" >> $GITHUB_ENV
         echo "UPLOAD_FIRMWARE=${UPLOAD_FIRMWARE}" >> $GITHUB_ENV
         echo "UPLOAD_COWTRANSFER=${UPLOAD_COWTRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_WETRANSFER=${UPLOAD_WETRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
+        echo "UPLOAD_ALLKMOD=${UPLOAD_ALLKMOD}" >> $GITHUB_ENV
         echo "USE_Cache=${USE_Cache}" >> $GITHUB_ENV
         chmod +x $DIY_SH $DIY_SH_AFB $DIY_SH_RFC gen-sha256sum.sh
 
@@ -130,6 +132,15 @@ jobs:
         [ -e machine-configs/${{matrix.target}}.config ] && mv -f machine-configs/${{matrix.target}}.config openwrt/package-configs/.config
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_SH ${{matrix.target}}
+        make defconfig
+        $GITHUB_WORKSPACE/$DIY_SH_RFC ${{matrix.target}}
+        echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: 添加kmod
+      if: steps.config.outputs.status == 'success' && env.UPLOAD_ALLKMOD == 'true'
+      id: config2
+      run: |
+        cd openwrt
         $GITHUB_WORKSPACE/$DIY_SH_RFC kmod
         make defconfig
         $GITHUB_WORKSPACE/$DIY_SH_RFC kmod
@@ -204,9 +215,9 @@ jobs:
       with:
         name: ${{ env.VERSION }}_${{matrix.target}}_main
         path: |
-          openwrt/bin/targets/
+          openwrt/bin/
 
-    - name: 生成ipk和固件的zip
+    - name: 打包ipk成zip文件
       id: afb
       continue-on-error: true
       if: steps.compile.outputs.status == 'success' && !cancelled()
@@ -218,11 +229,14 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && steps.afb.outputs.status == 'success' && !cancelled()
       run: |
-        mkdir firmware
+        mkdir firmware ipks
+        cp -u -f openwrt/kernelipks.zip ipks
+        cp -u -f openwrt/ipks.zip ipks
         cp -u -f openwrt/kernelipks.zip firmware
         cp -u -f openwrt/ipks.zip firmware
         cp openwrt/.config  ./firmware/${{matrix.target}}.config
         cp openwrt/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{matrix.target}}_kernel.config
+        mv -f openwrt/bin/targets/*/*/{*combined*,*sysupgrade*,*ext4*,*sdk*,*imagebuilder*} ./firmware/ 2>/dev/null || true
         cd firmware
         echo "v${{ env.date2 }}" > version.txt
         echo ${{matrix.target}} >> version.txt
@@ -233,11 +247,20 @@ jobs:
     - name: 上传firmware目录
       uses: actions/upload-artifact@main
       continue-on-error: true
-      if: steps.organize.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
+      with:
+        name: ${{ env.VERSION }}_${{matrix.target}}_firmware_main
+        path: |
+          firmware
+
+    - name: 上传ipk目录
+      uses: actions/upload-artifact@main
+      continue-on-error: true
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_IPK_DIR == 'true' && steps.afb.outputs.status == 'success'
       with:
         name: ${{ env.VERSION }}_${{matrix.target}}_ipks_main
         path: |
-          firmware
+          ipks
 
     - name: 上传固件cowtransfer
       id: cowtransfer

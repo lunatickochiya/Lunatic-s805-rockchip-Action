@@ -15,8 +15,8 @@ index dd4c4c1448..bfbd468e99 100644
  SUBTARGET:=filogic
  BOARDNAME:=Filogic 8x0 (MT798x)
  CPU_TYPE:=cortex-a53
--DEFAULT_PACKAGES += kmod-crypto-hw-safexcel kmod-mt7915e wpad-basic-mbedtls uboot-envtools
-+DEFAULT_PACKAGES += kmod-crypto-hw-safexcel kmod-mt7915e wpad-mesh-openssl uboot-envtools
+-DEFAULT_PACKAGES += kmod-phy-aquantia kmod-crypto-hw-safexcel kmod-mt7915e wpad-basic-mbedtls uboot-envtools
++DEFAULT_PACKAGES += kmod-phy-aquantia kmod-crypto-hw-safexcel kmod-mt7915e wpad-mesh-openssl uboot-envtools
  KERNELNAME:=Image dtbs
  
  define Target/Description
