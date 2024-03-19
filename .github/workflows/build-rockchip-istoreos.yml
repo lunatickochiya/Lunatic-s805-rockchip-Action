@@ -237,8 +237,8 @@ jobs:
         mkdir firmware ipks
         cp -u -f openwrt/kernelipks.zip ipks
         cp -u -f openwrt/ipks.zip ipks
-        cp -u -f openwrt/kernelipks.zip firmware
-        cp -u -f openwrt/ipks.zip firmware
+        [ $UPLOAD_RELEASE = true ] && cp -u -f openwrt/kernelipks.zip firmware
+        [ $UPLOAD_RELEASE = true ] && cp -u -f openwrt/ipks.zip firmware
         cp openwrt/.config  ./firmware/${{matrix.target}}.config
         cp openwrt/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{matrix.target}}_kernel.config
         mv -f openwrt/bin/targets/*/*/{*combined*,*sysupgrade*,*ext4*,*sdk*,*imagebuilder*} ./firmware/ 2>/dev/null || true

@@ -215,8 +215,8 @@ jobs:
       if: env.UPLOAD_FIRMWARE == 'true' && steps.afb.outputs.status == 'success' && !cancelled()
       run: |
         mkdir firmware ipks
-        cp -u -f openwrt/kernelipks.zip firmware
-        cp -u -f openwrt/ipks.zip firmware
+        [ $UPLOAD_RELEASE = true ] && cp -u -f openwrt/kernelipks.zip firmware
+        [ $UPLOAD_RELEASE = true ] && cp -u -f openwrt/ipks.zip firmware
         cp -u -f openwrt/kernelipks.zip ipks
         cp -u -f openwrt/ipks.zip ipks
         mv -f openwrt/bin/targets/*/*/{*combined*,*sysupgrade*,*ext4*,*sdk*,*imagebuilder*,*initramfs*,*factory*} ./firmware/ 2>/dev/null || true
