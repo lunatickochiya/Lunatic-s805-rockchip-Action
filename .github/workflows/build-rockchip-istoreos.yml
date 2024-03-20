@@ -74,6 +74,7 @@ jobs:
         echo "UPLOAD_WETRANSFER=${UPLOAD_WETRANSFER}" >> $GITHUB_ENV
         echo "UPLOAD_RELEASE=${UPLOAD_RELEASE}" >> $GITHUB_ENV
         echo "UPLOAD_ALLKMOD=${UPLOAD_ALLKMOD}" >> $GITHUB_ENV
+        echo "UPLOAD_SYSUPGRADE=${UPLOAD_SYSUPGRADE}" >> $GITHUB_ENV
         echo "USE_Cache=${USE_Cache}" >> $GITHUB_ENV
         chmod +x $DIY_SH $DIY_SH_AFB $DIY_SH_RFC gen-sha256sum.sh
 
@@ -237,11 +238,12 @@ jobs:
         mkdir firmware ipks
         cp -u -f openwrt/kernelipks.zip ipks
         cp -u -f openwrt/ipks.zip ipks
-        cp -u -f openwrt/kernelipks.zip firmware
-        cp -u -f openwrt/ipks.zip firmware
+        [ $UPLOAD_RELEASE = true ] && cp -u -f openwrt/kernelipks.zip firmware
+        [ $UPLOAD_RELEASE = true ] && cp -u -f openwrt/ipks.zip firmware
         cp openwrt/.config  ./firmware/${{matrix.target}}.config
         cp openwrt/build_dir/target-*/linux-*/linux-*/.config ./firmware/${{matrix.target}}_kernel.config
-        mv -f openwrt/bin/targets/*/*/{*combined*,*sysupgrade*,*ext4*,*sdk*,*imagebuilder*} ./firmware/ 2>/dev/null || true
+        mv -f openwrt/bin/targets/*/*/{*combined*,*ext4*,*sdk*,*imagebuilder*,*buildinfo*,*manifest*,*json*,*sha256sums*} ./firmware/ 2>/dev/null || true
+        [ $UPLOAD_SYSUPGRADE = true ] && mv -f openwrt/bin/targets/*/*/{*sysupgrade*} ./firmware/ 2>/dev/null || true
         cd firmware
         echo "v${{ env.date2 }}" > version.txt
         echo ${{matrix.target}} >> version.txt
