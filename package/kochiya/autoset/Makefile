@@ -213,6 +213,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_usb_storage
 	select PACKAGE_kmod-usb-storage
 	select PACKAGE_kmod-usb-storage-extras
 	select PACKAGE_kmod-ata-ahci
+	select PACKAGE_kmod-usb-storage-uas
 	select PACKAGE_kmod-nvme
 	select PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
 	depends on PACKAGE_$(PKG_NAME)

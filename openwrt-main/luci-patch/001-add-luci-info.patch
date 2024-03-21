@@ -16,22 +16,6 @@ diff --git a/modules/luci-base/root/usr/share/rpcd/ucode/luci b/modules/luci-bas
 index 3c4fea4691..6a7e5fe16b 100644
 --- a/modules/luci-base/root/usr/share/rpcd/ucode/luci
 +++ b/modules/luci-base/root/usr/share/rpcd/ucode/luci
-@@ -4,6 +4,7 @@
- 'use strict';
-
- import { stdin, access, dirname, basename, open, popen, glob, lsdir, readfile, readlink, error } from 'fs';
-+import { connect } from 'ubus';
- import { cursor } from 'uci';
-
- import { init_list, init_index, init_enabled, init_action, conntrack_list, process_list } from 'luci.sys';
-@@ -48,6 +49,7 @@ const methods = {
- 		call: function(request) {
- 			switch (request.args.action) {
- 			case 'enable':
-+			case 'enabled':
- 			case 'disable':
- 			case 'start':
- 			case 'stop':
 @@ -197,6 +199,7 @@ const methods = {
  				firewall4:  access('/sbin/fw4') == true,
  				opkg:       access('/bin/opkg') == true,
@@ -274,7 +258,7 @@ index 45f7b4acae..08fbde85c5 100644
  				systeminfo.load[2] / 65535.0
 -			) : null
 +			) : null,
-+			_('CPU usage (%)'),    cpuusage.cpuusage
++			_('CPU usage (%)'),    cpuusage.cpuusage,
 +			_('Source Code'),      sourcelink
  		];
 
