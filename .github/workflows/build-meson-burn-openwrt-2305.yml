@@ -1,4 +1,4 @@
-name: Build 23.05.2 Burn
+name: Build 23.05.3 Burn
 
 # Fix for broken build: https://github.com/softprops/action-gh-release/issues/236
 permissions:
@@ -21,7 +21,7 @@ jobs:
     runs-on: Ubuntu-22.04   
     if: github.event.repository.owner.id == github.event.sender.id
 
-    name: Build ${{matrix.target}} Burn OpenWrt-23.05.2 CUS
+    name: Build ${{matrix.target}} Burn OpenWrt-23.05.3 CUS
     strategy:
       fail-fast: false
       matrix:
@@ -87,7 +87,7 @@ jobs:
         git clone $REPO_URL -b $REPO_BRANCH openwrt --single-branch
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         cd openwrt
-        git checkout v23.05.2
+        git checkout v23.05.3
         sed -i '$a src-git kiddin9 https://github.com/lunatickochiya/actionbased-openwrt-packages.git' feeds.conf.default
         sed -i 's|src-git packages https://git.openwrt.org/feed/packages.git\^8e3a1824645f5e73ec44c897ac0755c53fb4a1f8|src-git packages https://git.openwrt.org/feed/packages.git;openwrt-23.05|g' feeds.conf.default
         echo "status=success" >> $GITHUB_OUTPUT
@@ -317,8 +317,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: "${{ env.FIRMWARE }}/*"
-        name: ${{ env.date2 }} ${{matrix.target}}-openwrt-23.05.2-CUS
-        tag_name: ${{ env.date }}_${{matrix.target}}-openwrt-23.05.2-CUS
+        name: ${{ env.date2 }} ${{matrix.target}}-openwrt-23.05.3-CUS
+        tag_name: ${{ env.date }}_${{matrix.target}}-openwrt-23.05.3-CUS
         body_path: release.txt
 
     - name: 删除工作流
