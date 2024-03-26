@@ -10,7 +10,7 @@ include $(INCLUDE_DIR)/target.mk
 
 PKG_NAME:=autoset
 PKG_VERSION:=4.0
-PKG_RELEASE:=7
+PKG_RELEASE:=8
 PKG_LICENSE:=GPLv3
 PKG_LICENSE_FILES:=LICENSE
 
@@ -50,49 +50,62 @@ endef
 define Package/autoset-uci
   $(Package/autoset/default)
   TITLE:=Support Packages for router uci
-  DEPENDS:=autoset +luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  DEPENDS:=+luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  VARIANT:=uci
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
 define Package/autoset-uci-oneport
   $(Package/autoset/default)
   TITLE:=Support Packages for oneport router uci
-  DEPENDS:=autoset +luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  DEPENDS:=+luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  VARIANT:=uci-oneport
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
 define Package/autoset-uci-meson
   $(Package/autoset/default)
   TITLE:=Support Packages for meson router uci
-  DEPENDS:=autoset +luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  DEPENDS:=+luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  VARIANT:=uci-meson
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
 define Package/autoset-uci-rockchip
   $(Package/autoset/default)
   TITLE:=Support Packages for rockchip router uci
-  DEPENDS:=autoset +luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  DEPENDS:=+luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  VARIANT:=uci-rockchip
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
 define Package/autoset-uci-mediatek
   $(Package/autoset/default)
   TITLE:=Support Packages for mediatek arm64 router uci
-  DEPENDS:=autoset +luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  DEPENDS:=+luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  VARIANT:=uci-mediatek
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
 define Package/autoset-uci-ramips
   $(Package/autoset/default)
   TITLE:=Support Packages for mediatek ramips router uci
-  DEPENDS:=autoset +luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  DEPENDS:=+luci-theme-material +luci +@LUCI_LANG_zh_Hans +luci-compat
+  VARIANT:=uci-ramips
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
-define Package/auto-resize-rootfs-script
+define Package/autoset-resize-rootfs-script
   $(Package/autoset/default)
   TITLE:=auto resize rootfs script
-  DEPENDS:=autoset
+  VARIANT:=resize-rootfs-script
+  PROVIDES:=autoset
   HIDDEN:=1
 endef
 
@@ -107,23 +120,22 @@ endef
 define Package/luci-temperature-script
   $(Package/autoset/default)
   TITLE:=luci temperature script
-  DEPENDS:=autoset
   HIDDEN:=1
 endef
 
 define Package/luci-temperature-script-mtk
   $(Package/autoset/default)
   TITLE:=luci temperature script mtk
-  DEPENDS:=autoset
   HIDDEN:=1
 endef
 
 define Package/$(PKG_NAME)/config
+menu "Configuration"
+	depends on PACKAGE_$(PKG_NAME)
 
 config PACKAGE_$(PKG_NAME)_SIDE_ROUTER_rockchip
 	bool "Rockchip Side router mode"
 	select PACKAGE_$(PKG_NAME)_INCLUDE_uci_rockchip
-	depends on PACKAGE_$(PKG_NAME)
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_RESIZEFS
@@ -139,10 +151,9 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_RESIZEFS
 	select PACKAGE_mkf2fs
 	select PACKAGE_mount-utils
 	select PACKAGE_parted
-	select PACKAGE_auto-resize-rootfs-script
+	select PACKAGE_autoset-resize-rootfs-script
 	select PACKAGE_kmod-loop
 	select PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
-	depends on PACKAGE_$(PKG_NAME)
 	default y if TARGET_meson=y||TARGET_rockchip=y||i386||x86_64
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_IPTABLE_LEGACY
@@ -151,21 +162,17 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_IPTABLE_LEGACY
 	select PACKAGE_iptables-zz-legacy
 	select PACKAGE_ip6tables
 	select PACKAGE_ip6tables-zz-legacy
-	depends on PACKAGE_$(PKG_NAME)
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_IPTABLE_NFT
 	bool "ADD IPTABLES NFT"
 	select PACKAGE_ip6tables-nft
 	select PACKAGE_iptables-nft
-
-	depends on PACKAGE_$(PKG_NAME)
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_FW3
 	bool "ADD FIREWALL3"
 	select PACKAGE_firewall
-	depends on PACKAGE_$(PKG_NAME)
 	default n
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_temperature
@@ -174,19 +181,16 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_temperature
 	select PACKAGE_lm-sensors
 	select PACKAGE_htop
 	select HTOP_LMSENSORS
-	depends on PACKAGE_$(PKG_NAME)
 	default y if TARGET_meson=y||TARGET_rockchip=y||i386||x86_64
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_temperature_script
 	bool "Temperature Show script"
 	select PACKAGE_luci-temperature-script
-	depends on PACKAGE_$(PKG_NAME)
 	default y if TARGET_meson=y||TARGET_rockchip=y||i386||x86_64
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_temperature_script_mtk
 	bool "Temperature Show script for mtk"
 	select PACKAGE_luci-temperature-script-mtk
-	depends on PACKAGE_$(PKG_NAME)
 	default y if TARGET_mediatek_mt7981=y
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
@@ -194,25 +198,7 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
 	select PACKAGE_kmod-fs-ext4
 	select PACKAGE_kmod-fs-btrfs
 	select PACKAGE_kmod-fs-exfat
-	depends on PACKAGE_$(PKG_NAME)
 	default n
-
-choice
-	prompt "Select ntfs filesystem"
-	depends on PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
-	default PACKAGE_$(PKG_NAME)_INCLUDE_ntfs
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_ntfs
-	bool "NTFS KERNEL"
-	select PACKAGE_kmod-fs-ntfs3
-
-config PACKAGE_$(PKG_NAME)_INCLUDE_ntfs_oot
-	bool "NTFS OOT"
-	select PACKAGE_kmod-fs-ntfs3-oot
-	select PACKAGE_ntfs3-mount
-	select PACKAGE_ntfsprogs
-
-endchoice
 
 config PACKAGE_$(PKG_NAME)_INCLUDE_usb_storage
 	bool "Kernel usb2 usb3 storage"
@@ -225,12 +211,10 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_usb_storage
 	select PACKAGE_kmod-usb-storage-uas
 	select PACKAGE_kmod-nvme
 	select PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
-	depends on PACKAGE_$(PKG_NAME)
 	default n
 
 choice
 	prompt "Select UCI Script"
-	depends on PACKAGE_$(PKG_NAME)
 	default PACKAGE_$(PKG_NAME)_INCLUDE_uci_meson if TARGET_meson=y
 	default PACKAGE_$(PKG_NAME)_INCLUDE_uci_rockchip if TARGET_rockchip=y
 	default PACKAGE_$(PKG_NAME)_INCLUDE_uci_mediatek if TARGET_mediatek=y
@@ -261,6 +245,24 @@ config PACKAGE_$(PKG_NAME)_INCLUDE_uci_ramips
 	select PACKAGE_autoset-uci-ramips
 endchoice
 
+choice
+	prompt "Select ntfs filesystem"
+	depends on PACKAGE_$(PKG_NAME)_INCLUDE_filesystem
+	default PACKAGE_$(PKG_NAME)_INCLUDE_ntfs
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_ntfs
+	bool "NTFS KERNEL"
+	select PACKAGE_kmod-fs-ntfs3
+
+config PACKAGE_$(PKG_NAME)_INCLUDE_ntfs_oot
+	bool "NTFS OOT"
+	select PACKAGE_kmod-fs-ntfs3-oot
+	select PACKAGE_ntfs3-mount
+	select PACKAGE_ntfsprogs
+
+endchoice
+
+endmenu
 endef
 
 define Package/autoset/install
@@ -302,7 +304,7 @@ define Package/autoset-uci-oneport/install
 	$(INSTALL_BIN) ./files/zzz-autoset-oneport $(1)/etc/uci-defaults/zz99-autoset-oneport
 endef
 
-define Package/auto-resize-rootfs-script/install
+define Package/autoset-resize-rootfs-script/install
 	$(INSTALL_DIR) $(1)/root
 	$(INSTALL_BIN) ./files/resize.sh $(1)/root/resize.sh
 endef
@@ -333,8 +335,8 @@ $(eval $(call BuildPackage,autoset-uci-rockchip))
 $(eval $(call BuildPackage,autoset-uci-mediatek))
 $(eval $(call BuildPackage,autoset-uci-ramips))
 $(eval $(call BuildPackage,autoset-uci-meson))
-$(eval $(call BuildPackage,auto-resize-rootfs-script))
+$(eval $(call BuildPackage,autoset-resize-rootfs-script))
 $(eval $(call BuildPackage,luci-temperature-script))
 $(eval $(call BuildPackage,luci-temperature-script-mtk))
-#$(eval $(call BuildPackage,drop-fw4-nftables))
+# $(eval $(call BuildPackage,drop-fw4-nftables))
 
