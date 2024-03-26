@@ -104,9 +104,12 @@ jobs:
       if: steps.clone.outputs.status == 'success'
       id: files
       run: |
-        [ -d openwrt-2305/mypatch-2305 ] && mv -f openwrt-2305/mypatch-2305 openwrt/mypatch
         [ -d package ] && mv -f package/* openwrt/package
         [ -d openwrt-2305/package-for-mt798x ] && mv -f openwrt-2305/package-for-mt798x/* openwrt/package
+        [ -d openwrt-2305/mypatch-2305-${{matrix.target}} ] && mv -f openwrt-2305/mypatch-2305-${{matrix.target}} openwrt/mypatch
+        cd openwrt
+        $GITHUB_WORKSPACE/$DIY_SH patch-openwrt
+        cd ../
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 更新 & 安装 feeds
@@ -156,6 +159,8 @@ jobs:
         echo "------------------------"
         awk '/mediatek/ { print }' .config
         echo "------------------------"
+        awk '/wpad/ { print }' .config
+        echo "------------------------"
         awk '/docker/ { print }' .config
         echo "------------------------"
         awk '/DOCKER/ { print }' .config
@@ -163,6 +168,8 @@ jobs:
         awk '/store/ { print }' .config
         echo "------------------------"
         awk '/perl/ { print }' .config
+        echo "------------------------"
+        awk '/dnsmasq/ { print }' .config
         echo "------------------------"
         awk '/CONFIG_PACKAGE_kmod/ { print }' .config
 

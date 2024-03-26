@@ -1,0 +1,11 @@
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -17,7 +17,7 @@ DEFAULT_PACKAGES:=\
+ 	fstools \
+ 	libc \
+ 	libgcc \
+-	libustream-mbedtls \
++	libustream-openssl \
+ 	logd \
+ 	mtd \
+ 	netifd \

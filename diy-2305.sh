@@ -9,10 +9,12 @@ autosetver() {
 version=23.05
 sed -i "52i\echo \"DISTRIB_DESCRIPTION='OpenWrt $version Compiled by 2U4U'\" >> /etc/openwrt_release" package/kochiya/autoset/files/zzz-autoset-meson
 sed -i "51i\echo \"DISTRIB_DESCRIPTION='OpenWrt $version Compiled by 2U4U'\" >> /etc/openwrt_release" package/kochiya/autoset/files/zzz-autoset-mediatek
+sed -i "51i\echo \"DISTRIB_DESCRIPTION='OpenWrt $version Compiled by 2U4U'\" >> /etc/openwrt_release" package/kochiya/autoset/files/zzz-autoset-ramips
 sed -i "52i\echo \"DISTRIB_DESCRIPTION='OpenWrt $version Compiled by 2U4U'\" >> /etc/openwrt_release" package/kochiya/autoset/files/zzz-autoset-rockchip
 sed -i "51i\echo \"DISTRIB_DESCRIPTION='OpenWrt $version Compiled by 2U4U'\" >> /etc/openwrt_release" package/kochiya/autoset/files/zzz-autoset-rockchip-siderouter
 
 grep DISTRIB_DESCRIPTION package/kochiya/autoset/files/zzz-autoset-mediatek
+grep DISTRIB_DESCRIPTION package/kochiya/autoset/files/zzz-autoset-ramips
 grep DISTRIB_DESCRIPTION package/kochiya/autoset/files/zzz-autoset-meson
 grep DISTRIB_DESCRIPTION package/kochiya/autoset/files/zzz-autoset-rockchip
 grep DISTRIB_DESCRIPTION package/kochiya/autoset/files/zzz-autoset-rockchip-siderouter
@@ -98,6 +100,7 @@ function patch_openwrt() {
             patch -p1 --no-backup-if-mismatch < mypatch/$i
         done
         }
+
 function patch_package() {
         for packagepatch in $( ls feeds/packages/feeds-package-patch-2305 ); do
             cd feeds/packages/
@@ -106,6 +109,7 @@ function patch_package() {
             cd ../..
         done
         }
+
 function patch_luci() {
         for lucipatch in $( ls feeds/luci/luci-patch-2305 ); do
             cd feeds/luci/
@@ -246,6 +250,8 @@ patch_package
 patch_luci
 patch_kiddin9
 add_mpc1917_nft_packages
+elif [ "$1" == "patch-openwrt" ]; then
+patch_openwrt
 elif [ "$1" == "rockpatch" ]; then
 patch_rockchip
 elif [ "$1" == "firewallremove" ]; then

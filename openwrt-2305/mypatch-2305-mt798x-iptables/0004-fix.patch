@@ -1,0 +1,13 @@
+diff --git a/package/kernel/linux/modules/netsupport.mk b/package/kernel/linux/modules/netsupport.mk
+index 736021f2eb..81c26de5f4 100644
+--- a/package/kernel/linux/modules/netsupport.mk
++++ b/package/kernel/linux/modules/netsupport.mk
+@@ -1286,7 +1286,7 @@ define KernelPackage/rxrpc
+   FILES:= \
+ 	$(LINUX_DIR)/net/rxrpc/rxrpc.ko
+   AUTOLOAD:=$(call AutoLoad,30,rxrpc.ko)
+-  DEPENDS:= +kmod-crypto-manager +kmod-crypto-pcbc +kmod-crypto-fcrypt
++  DEPENDS:= +kmod-crypto-manager +kmod-crypto-pcbc +kmod-crypto-fcrypt +kmod-udptunnel4 +kmod-udptunnel6
+ endef
+ 
+ define KernelPackage/rxrpc/description

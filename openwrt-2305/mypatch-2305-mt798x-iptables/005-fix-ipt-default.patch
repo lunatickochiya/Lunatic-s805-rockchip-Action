@@ -1,0 +1,34 @@
+diff --git a/package/network/services/dnsmasq/Makefile b/package/network/services/dnsmasq/Makefile
+index 5224e996a4..384c03d7ae 100644
+--- a/package/network/services/dnsmasq/Makefile
++++ b/package/network/services/dnsmasq/Makefile
+@@ -112,10 +112,10 @@ define Package/dnsmasq-full/config
+ 		default y
+ 	config PACKAGE_dnsmasq_full_ipset
+ 		bool "Build with IPset support."
+-		default n
++		default y
+ 	config PACKAGE_dnsmasq_full_nftset
+ 		bool "Build with Nftset support."
+-		default y
++		default n
+ 	config PACKAGE_dnsmasq_full_conntrack
+ 		bool "Build with Conntrack support."
+ 		default y
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -53,10 +53,10 @@ DEFAULT_PACKAGES.nas:=\
+ 	mdadm
+ # For router targets
+ DEFAULT_PACKAGES.router:=\
+-	dnsmasq \
+-	firewall4 \
+-	nftables \
+-	kmod-nft-offload \
++	dnsmasq-full \
++	firewall \
++	iptables \
++	ip6tables \
+ 	odhcp6c \
+ 	odhcpd-ipv6only \
+ 	ppp \
